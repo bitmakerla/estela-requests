@@ -1,10 +1,82 @@
 ## First draft version
 import logging
+import os
 
-from typing import Any, Optional, Union
-from requests import Response, Session
-#from estela_requests_wrapper.mixins import url_logger
+from typing import Any, Optional, Union, Callable, Dict, List
+from requests import Response, Session, Request
+from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_queue_adapter import get_producer_interface
+from estela_requests_wrapper.utils import get_producer, get_requests
+from estela_requests_wrapper.middlewares.requests_history import RequestsHistoryMiddleware
+from estela_requests_wrapper.middlewares.interface import EstelaMiddlewareInterface
+from estela_requests_wrapper.request_interfaces import HttpRequestInterface
+
+
+def apply_request_middlewares(mw_list: List[EstelaMiddlewareInterface]):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            for mw in mw_list:
+                mw.before_request(*args, **kwargs)
+
+            response = func(*args, **kwargs)
+
+            for mw in mw_list:
+                mw.after_request(response)
+
+            return response
+        return wrapper
+    return decorator
+
+
+class EstelaWrapper:
+
+    http_client: HttpRequestInterface
+
+    def __init__(self,
+                 producer: Optional[ProducerInterface] = None,
+                 metadata: Optional[Dict] = {},
+                 http_client: Optional[HttpRequestInterface] = None) -> None:
+        self.producer = get_producer(producer)
+        self.metadata = metadata
+        self.http_client = http_client
+        self.middlewares = [RequestsHistoryMiddleware(self.producer, "job_requests", self.metadata)]
+        if self.producer.get_connection():
+            print("Successful connection to the queue platform")
+        else:
+            raise Exception("Could not connect to the queue platform") 
+
+    def apply_request_middlewares(self, func):
+        def wrapper(*args, **kwargs):
+            for mw in self.middlewares:
+                mw.before_request(*args, **kwargs)
+
+            response = func(*args, **kwargs)
+
+            for mw in self.middlewares:
+                mw.after_request(response)
+
+            return response
+        return wrapper
+
+    def _get_http_client(self):
+        return self.http_client
+    
+    @apply_request_middlewares
+    def get(self, *args, **kwargs):
+        return self.http_client.get(*args, **kwargs)
+    
+    @apply_request_middlewares
+    def request(self, *args, **kwargs):
+        return self.http_client.request(*args, **kwargs)
+    
+    
+
+
+# entrypoint
+# run spider books
+# python books.py 
+# 
+        
 
 class EstelaRequestsWrapper:
     producer = get_producer_interface()

@@ -1,10 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
-from estela_requests_wrapper.requests_wrapper import RequestsWrapperSession
+from estela_requests_wrapper.requests_wrapper import EstelaWrapper
+from estela_queue_adapter.get_interface import get_producer_interface
 from urllib.parse import urljoin
 
 url = "https://stackoverflow.com/questions/tagged/web-scraping"
-session = RequestsWrapperSession()
+#session = RequestsWrapperSession()
+producer = get_producer_interface()
+crequests = EstelaWrapper(producer=producer, metadata={"name": "requests"}, http_client=requests)
 counter = 10
 def get_pages(act_url, i):
     response = session.get(act_url)
