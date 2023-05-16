@@ -1,12 +1,11 @@
 from typing import Dict
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests_wrapper.estela_response import EstelaResponse
+from estela_requests_wrapper.http import EstelaResponse
 from estela_requests_wrapper.utils import parse_time
 from estela_requests_wrapper.middlewares.interface import EstelaMiddlewareInterface
 
 
 class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
-    # It should be executed by request.
     """It will send requests history to the queue producer."""
 
     def __init__(self, producer: ProducerInterface,
@@ -21,15 +20,23 @@ class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
             **self.metadata,
             "payload":{ 
                 "url": response.url,
-                "status": int(response.status),
-                #"method": response.request.method,
-                #"duration": response.request.time_in_seconds,
+                "status": int(response.status_code),
+                "method": response.request.method,
+                "duration": response.time_in_seconds.total_seconds(),
                 "time": parse_time(),
-                #"fingerprint": response.request.fingerprint,
-                "fingerprint": "dumps",
-                "self.response_size": len(response.body),
+                "fingerprint": response.fingerprint,
+                "response_size": len(response.text),
             }
         }
 
     def after_request(self, response: EstelaResponse):
         self.producer.send(self.topic, self.get_history_data(response))
+
+    def before_request(self, *args, **kwargs):
+        return super().before_request(*args, **kwargs)
+    
+    def after_session(self, *args, **kwargs):
+        return super().after_session(*args, **kwargs)
+    
+    def before_session(self, *args, **kwargs):
+        return super().before_session(*args, **kwargs)
