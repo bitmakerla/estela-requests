@@ -29,7 +29,7 @@ class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
             }
         }
 
-    def after_request(self, response: EstelaResponse):
+    def after_request(self, response: EstelaResponse, *args, **kwargs):
         self.producer.send(self.topic, self.get_history_data(response))
 
     def before_request(self, *args, **kwargs):

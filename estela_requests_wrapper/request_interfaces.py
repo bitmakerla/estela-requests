@@ -1,5 +1,6 @@
 """Request interfaces."""
 import requests
+from requests import PreparedRequest
 
 class HttpRequestInterface:
     """It defines the expected interface that a request interface sholhd
@@ -11,6 +12,8 @@ class HttpRequestInterface:
         pass
 
 class RequestsInterface(HttpRequestInterface):
+    prepared_request = None
+
     def request(self, *args, **kwargs):
         return requests.request(*args, **kwargs)
     

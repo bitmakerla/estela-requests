@@ -10,11 +10,11 @@ crequests = RequestsInterface()
 producer = get_producer_interface()
 wrapper = EstelaWrapper(
     producer=producer,
-    metadata={"jid": "1.new-estela-response.b1709e50-6717-4913-af4c-49b72a8243f5"},
+    metadata={"jid": "1.finalrequestpullrequest.b1709e50-6717-4913-af4c-49b72a8243f5"},
     http_client=crequests,
 )
 
-counter = 5
+counter = 10
 def get_pages(act_url, i):
     response = wrapper.get(act_url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -34,4 +34,4 @@ def get_pages(act_url, i):
     get_pages(next_page, i)
 
 get_pages(url, 0)
-wrapper.call_middlewares()
+wrapper.call_after_session_middlewares()
