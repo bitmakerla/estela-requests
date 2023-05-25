@@ -1,0 +1,37 @@
+# Archivos generados por Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyz
+*.pyw
+*.pyz/
+*.pyw/
+*.pyc
+
+# Entorno virtual
+venv/
+env/
+
+# Archivo de registro
+*.log
+
+# Archivos de respaldo
+*~
+*.bak
+*.swp
+
+# Carpeta de resultados de pruebas y cobertura
+.coverage
+htmlcov/
+
+# Archivos de configuración local
+.env
+.env.*
+
+# Archivos de dependencias y entorno
+pip-lock.txt
+.vscode/
+prueba_requests.py
+.gitignore
+request_spider.py
