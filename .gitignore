@@ -30,6 +30,8 @@ htmlcov/
 .env.*
 
 # Archivos de dependencias y entorno
-requirements.txt
 pip-lock.txt
 .vscode/
+prueba_requests.py
+.gitignore
+request_spider.py
