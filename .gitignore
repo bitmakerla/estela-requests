@@ -32,3 +32,4 @@ htmlcov/
 # Archivos de dependencias y entorno
 requirements.txt
 pip-lock.txt
+.vscode/

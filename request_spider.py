@@ -9,9 +9,9 @@ url = "https://stackoverflow.com/questions/tagged/awk"
 crequests = RequestsInterface()
 producer = get_producer_interface()
 wrapper = EstelaWrapper(
-    producer=producer,
-    metadata={"jid": "1.finalrequestpullrequest.b1709e50-6717-4913-af4c-49b72a8243f5"},
-    http_client=crequests,
+#    producer=producer,
+    metadata={"jid": "1.newpullrequest.b1709e50-6717-4913-af4c-49b72a8243f5"},
+#    http_client=crequests,
 )
 
 counter = 10

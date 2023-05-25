@@ -6,7 +6,7 @@ from typing import Any, Optional, Union, Callable, Dict, List
 from requests import Response, Session, Request
 from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_queue_adapter import get_producer_interface
-from estela_requests_wrapper.utils import get_producer, get_requests, get_estela_response
+from estela_requests_wrapper.utils import get_producer, get_estela_response, get_metadata, get_http_client
 from estela_requests_wrapper.middlewares.requests_history import RequestsHistoryMiddleware
 from estela_requests_wrapper.middlewares.stats import StatsMiddleware
 from estela_requests_wrapper.http import EstelaResponse
@@ -37,12 +37,12 @@ class EstelaWrapper:
                  metadata: Optional[Dict] = {},
                  http_client: Optional[HttpRequestInterface] = None) -> None:
         self.producer = get_producer(producer)
-        self.metadata = metadata
-        self.http_client = http_client
+        self.metadata = get_metadata(metadata)
+        self.http_client = get_http_client(http_client)
         if self.producer.get_connection():
             print("Successful connection to the queue platform")
         else:
-            raise Exception("Could not connect to the queue platform") 
+            raise Exception("Could not connect to the qbueue platform") 
         self.middlewares = [
             RequestsHistoryMiddleware(self.producer, "job_requests", self.metadata),
             StatsMiddleware(self.producer, "job_stats", self.metadata),
