@@ -7,9 +7,9 @@ from typing import Optional, Callable, Union
 from datetime import datetime
 from estela_queue_adapter import get_producer_interface
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests_wrapper.http import EstelaResponse, EstelaRequest
-from estela_requests_wrapper.request_interfaces import HttpRequestInterface, RequestsInterface
-from estela_requests_wrapper.exceptions import UnexpectedResponseType
+from estela_requests.http import EstelaResponse, EstelaRequest
+from estela_requests.request_interfaces import HttpRequestInterface, RequestsInterface
+from estela_requests.exceptions import UnexpectedResponseType
 from requests import Response
 
 default_requests = requests

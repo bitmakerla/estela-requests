@@ -6,11 +6,11 @@ from typing import Any, Optional, Union, Callable, Dict, List
 from requests import Response, Session, Request
 from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_queue_adapter import get_producer_interface
-from estela_requests_wrapper.utils import get_producer, get_estela_response, get_metadata, get_http_client
-from estela_requests_wrapper.middlewares.requests_history import RequestsHistoryMiddleware
-from estela_requests_wrapper.middlewares.stats import StatsMiddleware
-from estela_requests_wrapper.http import EstelaResponse
-from estela_requests_wrapper.request_interfaces import HttpRequestInterface
+from estela_requests.utils import get_producer, get_estela_response, get_metadata, get_http_client
+from estela_requests.middlewares.requests_history import RequestsHistoryMiddleware
+from estela_requests.middlewares.stats import StatsMiddleware
+from estela_requests.http import EstelaResponse
+from estela_requests.request_interfaces import HttpRequestInterface
 
 
 def apply_request_middlewares(func: Callable):
