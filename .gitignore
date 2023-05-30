@@ -35,3 +35,8 @@ pip-lock.txt
 prueba_requests.py
 .gitignore
 request_spider.py
+
+# Ignore package installation files
+*.egg-info/
+dist/
+build/

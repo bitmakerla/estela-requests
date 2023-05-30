@@ -1,8 +1,8 @@
 from typing import Dict
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests_wrapper.http import EstelaResponse
-from estela_requests_wrapper.utils import parse_time
-from estela_requests_wrapper.middlewares.interface import EstelaMiddlewareInterface
+from estela_requests.http import EstelaResponse
+from estela_requests.utils import parse_time
+from estela_requests.middlewares.interface import EstelaMiddlewareInterface
 
 
 class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
