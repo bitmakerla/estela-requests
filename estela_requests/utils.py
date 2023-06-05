@@ -35,7 +35,7 @@ def get_metadata(metadata: Optional[dict] = None) -> dict:
     args:
         metadata (Optional[dict]): The metadata.
     """
-    return metadata or decode_job()["key"]
+    return metadata or {"jid": decode_job()["key"]}
 
 
 def get_producer(producer: Optional[ProducerInterface]) -> ProducerInterface:
