@@ -34,7 +34,7 @@ class EstelaWrapper:
 
     def __init__(self,
                  producer: Optional[ProducerInterface] = None,
-                 metadata: Optional[Dict] = {},
+                 metadata: Optional[Dict] = None,
                  http_client: Optional[HttpRequestInterface] = None) -> None:
         self.producer = get_producer(producer)
         self.metadata = get_metadata(metadata)
