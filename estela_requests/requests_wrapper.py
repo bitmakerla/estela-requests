@@ -75,7 +75,5 @@ class EstelaWrapper:
     def call_after_session_middlewares(self):
         for mw in self.middlewares:
             mw.after_session()
-
-    def __del__(self):
         self.producer.flush()
         self.producer.close()
