@@ -1,6 +1,5 @@
 """Request interfaces."""
 import requests
-from requests import PreparedRequest
 
 class HttpRequestInterface:
     """It defines the expected interface that a request interface sholhd

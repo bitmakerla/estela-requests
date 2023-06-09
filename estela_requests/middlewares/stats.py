@@ -3,7 +3,8 @@
 from typing import Dict
 from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_requests.middlewares.interface import EstelaMiddlewareInterface
-from estela_requests.http import EstelaResponse
+from estela_requests.estela_hub import EstelaHub
+from estela_requests.estela_http import EstelaResponse
 from estela_requests.utils import parse_time
 
 class StatsMiddleware(EstelaMiddlewareInterface):
@@ -36,6 +37,10 @@ class StatsMiddleware(EstelaMiddlewareInterface):
             "finish_time": None,
             "finish_reason": None
         }
+
+    @classmethod
+    def from_estela_hub(cls, estela_hub: EstelaHub):
+        return cls(estela_hub.producer, estela_hub.job_stats_topic, {"jid": estela_hub.job})
 
 
     def after_request(self, response: EstelaResponse, *args, **kwargs):
