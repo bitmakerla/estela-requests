@@ -1,7 +1,5 @@
-
-
 """Class that the middlewares expect to receive."""
-class EstelaRequest:
+class EstelaHttpRequest:
     def __init__(self, request_obj, *args) -> None:
         self.request_obj = request_obj
 
@@ -16,7 +14,7 @@ class EstelaResponse:
                  body: bytes,
                  text: str,
                  status_code: int,
-                 request: EstelaRequest,
+                 request: EstelaHttpRequest,
                  response_size,
                  fingerprint,
                  time_in_seconds) -> None: # Add raw response

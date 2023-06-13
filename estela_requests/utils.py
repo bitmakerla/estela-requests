@@ -7,13 +7,17 @@ from typing import Optional, Callable, Union
 from datetime import datetime
 from estela_queue_adapter import get_producer_interface
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests.http import EstelaResponse, EstelaRequest
+from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
 from estela_requests.request_interfaces import HttpRequestInterface, RequestsInterface
 from estela_requests.exceptions import UnexpectedResponseType
 from requests import Response
 
 default_requests = requests
 
+
+def elapsed_seconds_time(end_time, start_time):
+    elapsed = datetime.strptime(end_time, "%d/%m/%Y %H:%M:%S.%f") - datetime.strptime(start_time, "%d/%m/%Y %H:%M:%S.%f")
+    return float(f"{elapsed.seconds}.{elapsed.microseconds}")
 
 def parse_time(date: datetime = None) -> str:
     """Parse the time to the format used in the Estela platform."""
@@ -28,15 +32,16 @@ def decode_job():
     job_data = os.getenv("JOB_INFO", "")
     if job_data.startswith("{"):
         return json.loads(job_data)
-    
-def get_metadata(metadata: Optional[dict] = None) -> dict:
-    """Get the metadata from the environment variables if metadata does not exist.
-    
-    args:
-        metadata (Optional[dict]): The metadata.
-    """
-    return metadata or {"jid": decode_job()["key"]}
 
+def get_api_host(api_host: Optional[str] = None) -> str:
+    """Get the API host from the environment variable."""
+    return api_host or os.getenv("ESTELA_SPIDER_HOST")
+
+def get_job(job: Optional[str] = None) -> str:
+    return job or os.getenv("ESTELA_SPIDER_JOB")
+
+def get_auth_token(auth_token: Optional[str] = None) -> str:
+    return auth_token or os.getenv("ESTELA_AUTH_TOKEN")
 
 def get_producer(producer: Optional[ProducerInterface]) -> ProducerInterface:
     """Get the producer interface.
@@ -63,10 +68,9 @@ def get_estela_response(response: Union[Response, any]) -> EstelaResponse:
             response.content,
             response.text,
             response.status_code,
-            EstelaRequest(response.request),
+            EstelaHttpRequest(response.request),
             len(response.text),
             hashlib.sha1(response.text.encode("UTF-8")).hexdigest(),
             response.elapsed,
         )
     raise UnexpectedResponseType("The response type is not supported")
-

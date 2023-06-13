@@ -40,3 +40,7 @@ request_spider.py
 *.egg-info/
 dist/
 build/
+*.env
+
+# Ignore dynaconf secret files
+.secrets.*

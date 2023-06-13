@@ -1,24 +1,31 @@
 from typing import Dict
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests.http import EstelaResponse
+from estela_requests.estela_http import EstelaResponse
 from estela_requests.utils import parse_time
 from estela_requests.middlewares.interface import EstelaMiddlewareInterface
+from estela_requests.estela_hub import EstelaHub
 
 
 class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
     """It will send requests history to the queue producer."""
 
-    def __init__(self, producer: ProducerInterface,
+    def __init__(self, 
+                 producer: ProducerInterface,
                  topic: str,
-                 metadata: Dict) -> None:
+                 metadata: Dict,
+                 )-> None:
         self.producer = producer
         self.topic = topic
         self.metadata = metadata
-    
+
+    @classmethod
+    def from_estela_hub(cls, estela_hub: EstelaHub):
+        return cls(estela_hub.producer, estela_hub.job_requests_topic, {"jid": estela_hub.job})
+
     def get_history_data(self, response: EstelaResponse):
         return {
             **self.metadata,
-            "payload":{ 
+            "payload":{
                 "url": response.url,
                 "status": int(response.status_code),
                 "method": response.request.method,
