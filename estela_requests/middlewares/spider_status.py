@@ -55,7 +55,7 @@ class SpiderStatusMiddleware(EstelaMiddlewareInterface):
     def after_session(self, *args, **kwargs):
         self.update_job(
             COMPLETED_STATUS,
-            lifespan=self.stats.get("elapsed_time_seconds",0 ),
+            lifespan=timedelta(seconds=self.stats.get("elapsed_time_seconds",0 )),
             item_count=self.stats.get("item_scraped_count", 0),
             total_bytes=self.stats.get("downloader/response_bytes", 0),
             request_count=self.stats.get("downloader/request_count", 0),
