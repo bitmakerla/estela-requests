@@ -19,25 +19,25 @@ class StatsMiddleware(EstelaMiddlewareInterface):
         self.metadata = metadata
         self.stats = stats
         self.default_data = {
-            "log_count/INFO": None,
+            "log_count/INFO": 0,
             "memusage/startup": None,
             "memusage/max": None,
             "scheduler/enqueued/memory": None,
             "scheduler/enqueued": None,
             "scheduler/dequeued/memory": None,
             "scheduler/dequeued": None,
-            "log_count/WARNING": None,
+            "log_count/WARNING": 0,
             "downloader/response_count": None,
             "downloader/response_bytes": None,
-            "log_count/ERROR": None,
-            "httpcompression/response_bytes": None,
-            "httpcompression/response_count": None,
-            "response_received_count": None,
-            "request_depth_max": None,
-            "httperror/response_ignored_count": None,
-            "elapsed_time_seconds": None,
+            "log_count/ERROR": 0,
+            "httpcompression/response_bytes": 0,
+            "httpcompression/response_count": 0,
+            "response_received_count": 0,
+            "request_depth_max": 0,
+            "httperror/response_ignored_count": 0,
+            "elapsed_time_seconds": 0,
             "finish_time": None,
-            "finish_reason": None
+            "finish_reason": "Unknown",
         }
 
     @classmethod
@@ -48,6 +48,7 @@ class StatsMiddleware(EstelaMiddlewareInterface):
         self.stats["downloader/response_status_count/{}".format(response.status_code)] = self.stats.get(
             "downloader/response_status_count/{}".format(response.status_code), 0) + 1
         self.stats["downloader/response_bytes"] = self.stats.get("downloader/response_bytes", 0) + len(response.text)
+        self.stats["response_received_count"] = self.stats.get("response_received_count", 0) + 1
     
     def after_session(self, *args, **kwargs):
         self.stats["finish_time"] = self.stats.get("finish_time", parse_time())
