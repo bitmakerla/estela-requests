@@ -2,8 +2,12 @@
     # producer, api_host, job, auth_token, http_client, args
 import logging
 
+from typing import List
+
 from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_requests.request_interfaces import HttpRequestInterface
+from estela_requests.middlewares.interface import EstelaMiddlewareInterface
+from estela_requests.item_pipeline import ItemPipelineInterface
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +23,12 @@ class EstelaHub:
                  job: str,
                  http_client: HttpRequestInterface,
                  args: str,
-                 middlewares: list,
+                 middlewares: List[EstelaMiddlewareInterface],
                  job_stats_topic: str,
                  job_requests_topic: str,
                  job_items_topic: str,
                  auth_token: str,
+                 item_pipelines: List[ItemPipelineInterface],
                  ) -> None:
         self.producer = producer
         self.api_host = api_host
@@ -36,6 +41,7 @@ class EstelaHub:
         self.job_items_topic = job_items_topic
         self.auth_token = auth_token
         self.stats = {}
+        self.item_pipelines = item_pipelines
 
     def __repr__(self):
         attribute_str = '\n'.join([f"'{attr.upper()}': '{getattr(self, attr)}'" for attr in vars(self)])
@@ -56,8 +62,9 @@ class EstelaHub:
                 job_requests_topic=settings.job_requests_topic,
                 job_items_topic=settings.job_items_topic,
                 auth_token=settings.estela_auth_token,
+                item_pipelines=settings.estela_item_pipelines,
             )
-            logger.info("Estelahub: %s", estela_hub)
+            logger.info("Estela Hub Created from settings: %s", estela_hub)
             return estela_hub
         except Exception as e:
             logger.exception("Failed to create EstelaHub from settings")

@@ -2,10 +2,10 @@
 from typing import Callable, Dict
 from estela_requests.request_interfaces import HttpRequestInterface
 from estela_requests.estela_http import EstelaResponse
-from estela_requests.item_pipeline import ItemPipeline
+from estela_requests.item_pipeline.manager import ItemPipelineManager
 from estela_requests.utils import get_estela_response
 from estela_requests.estela_hub import EstelaHub
-from estela_requests.middlewares.middleware_manager import MiddlewareManager
+from estela_requests.middlewares.manager import MiddlewareManager
 
 
 def apply_request_middlewares(func: Callable):
@@ -28,17 +28,17 @@ class EstelaRequests:
     http_client: HttpRequestInterface
     def __init__(self, 
                  middleware_manager: MiddlewareManager,
-                 item_pipeline: ItemPipeline,
+                 item_pipeline_manager: ItemPipelineManager,
                  http_client: HttpRequestInterface,
             ):
         self.middleware_manager = middleware_manager
-        self.item_pipeline = item_pipeline
+        self.item_pipeline_manager = item_pipeline_manager
         self.http_client = http_client
         self.middleware_manager.apply_before_session_middlewares()
 
     @classmethod
     def from_estela_hub(cls, estela_hub: EstelaHub):
-        return cls(MiddlewareManager.from_estela_hub(estela_hub), ItemPipeline.from_estela_hub(estela_hub), estela_hub.http_client)
+        return cls(MiddlewareManager.from_estela_hub(estela_hub), ItemPipelineManager.from_estela_hub(estela_hub), estela_hub.http_client)
 
     def get(self, *args, **kwargs):
         return self.request("GET", *args, **kwargs)
@@ -48,7 +48,7 @@ class EstelaRequests:
         return self.http_client.request(*args, **kwargs)
     
     def send_item(self, item: Dict, *args, **kwargs):
-        self.item_pipeline.send_item(item)
+        self.item_pipeline_manager.send_item(item)
 
     def call_after_session_middlewares(self):
         self.middleware_manager.apply_after_session_middlewares()
