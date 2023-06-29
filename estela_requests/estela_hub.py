@@ -4,10 +4,12 @@ import logging
 
 from typing import List
 
+from estela_requests.log_helpers import init_logging
 from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_requests.request_interfaces import HttpRequestInterface
 from estela_requests.middlewares.interface import EstelaMiddlewareInterface
 from estela_requests.item_pipeline import ItemPipelineInterface
+from estela_requests.item_pipeline.exporter import ItemExporterInterface
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +29,11 @@ class EstelaHub:
                  job_stats_topic: str,
                  job_requests_topic: str,
                  job_items_topic: str,
+                 job_logs_topic: str,
                  auth_token: str,
                  item_pipelines: List[ItemPipelineInterface],
+                 item_exporters: ItemExporterInterface,
+                 log_level: int,
                  ) -> None:
         self.producer = producer
         self.api_host = api_host
@@ -39,13 +44,16 @@ class EstelaHub:
         self.job_stats_topic = job_stats_topic
         self.job_requests_topic = job_requests_topic
         self.job_items_topic = job_items_topic
+        self.job_logs_topic = job_logs_topic
         self.auth_token = auth_token
         self.stats = {}
         self.item_pipelines = item_pipelines
-
+        self.item_exporters = item_exporters
+        self.log_level = logging._levelToName.get(log_level, "UNKNOWN")
+    
     def __repr__(self):
-        attribute_str = '\n'.join([f"'{attr.upper()}': '{getattr(self, attr)}'" for attr in vars(self)])
-        return f"EstelaHub(\n{{{attribute_str}}})"
+        attribute_str = '\n '.join([f"'{attr.upper()}': '{getattr(self, attr)}'," for attr in vars(self)])
+        return f"EstelaHub(\n{{{attribute_str}\n}})"
 
     @classmethod
     def create_from_settings(cls):
@@ -61,10 +69,14 @@ class EstelaHub:
                 job_stats_topic=settings.job_stats_topic,
                 job_requests_topic=settings.job_requests_topic,
                 job_items_topic=settings.job_items_topic,
+                job_logs_topic=settings.job_logs_topic,
                 auth_token=settings.estela_auth_token,
                 item_pipelines=settings.estela_item_pipelines,
+                item_exporters=settings.estela_item_exporters,
+                log_level=settings.estela_log_level,
             )
-            logger.info("Estela Hub Created from settings: %s", estela_hub)
+            init_logging(estela_hub, settings.estela_log_level)
+            logger.debug("Estela Hub Created from settings: %s", estela_hub)
             return estela_hub
         except Exception as e:
             logger.exception("Failed to create EstelaHub from settings")
