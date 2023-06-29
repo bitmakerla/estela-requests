@@ -36,12 +36,14 @@ class EstelaRequests:
                  item_pipeline_manager: ItemPipelineManager,
                  item_exporter_manager: ItemExporterManager,
                  http_client: HttpRequestInterface,
+                 estela_hub: EstelaHub, # to free resources
             ):
         self.middleware_manager = middleware_manager
         self.item_pipeline_manager = item_pipeline_manager
         self.item_exporter_manager = item_exporter_manager
         self.http_client = http_client
         self.middleware_manager.apply_before_session_middlewares()
+        self.estela_hub = estela_hub
 
 
     @classmethod
@@ -50,14 +52,16 @@ class EstelaRequests:
         try:
             instance = cls(
                 MiddlewareManager.from_estela_hub(estela_hub), ItemPipelineManager.from_estela_hub(estela_hub),
-                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client,
+                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client, estela_hub,
             )
             yield instance
         except Exception:
-            logger.exception("Exception while creating EstelaRequests instance")
+            logger.exception("Exception while creating EstelaRequests instance using EstelaHub")
         finally:
+            logger.debug("Cleaning up EstelaRequests...")
             logger.debug("Closing connection to the Estela platform")
             instance.cleanup_estela_requests()
+            instance.estela_hub.cleanup_resources()
 
     def get(self, *args, **kwargs):
         return self.request("GET", *args, **kwargs)
@@ -84,9 +88,7 @@ class EstelaRequests:
         self.middleware_manager.apply_after_session_middlewares()
 
     def free_resources(self):
-        from estela_requests.config import settings
-        settings.estela_producer.flush()
-        settings.estela_producer.close()  #TODO: donde se deberia hacer esto?, en cada clase?
+        pass
 
     def cleanup_estela_requests(self):
         self.middleware_manager.apply_after_session_middlewares()
@@ -102,8 +104,7 @@ class EstelaRequests:
 # job = os.getenv(JOB, "")
 # api_host = os.get()
 # auth_token = os.get(auth_toekn)
-# http_client = self.get_clinet()
-# args = self.getenv(args, "")
+# http_client = self.get_clinet()# args = self.getenv(args, "")
 # middlewares = [
 #   "path_al_middleware",
 #   "path_al_middleware_2",

@@ -34,6 +34,8 @@ class EstelaHub:
                  item_pipelines: List[ItemPipelineInterface],
                  item_exporters: ItemExporterInterface,
                  log_level: int,
+                 log_flag: logging.Handler,
+                 log_libraries: List[str],
                  ) -> None:
         self.producer = producer
         self.api_host = api_host
@@ -50,10 +52,18 @@ class EstelaHub:
         self.item_pipelines = item_pipelines
         self.item_exporters = item_exporters
         self.log_level = logging._levelToName.get(log_level, "UNKNOWN")
+        self.log_flag = log_flag
+        self.log_libraries = log_libraries
     
     def __repr__(self):
         attribute_str = '\n '.join([f"'{attr.upper()}': '{getattr(self, attr)}'," for attr in vars(self)])
         return f"EstelaHub(\n{{{attribute_str}\n}})"
+
+    def cleanup_resources(self):
+        """Cleanup resources."""
+        if self.producer:
+            self.producer.flush()
+            self.producer.close()
 
     @classmethod
     def create_from_settings(cls):
@@ -74,8 +84,10 @@ class EstelaHub:
                 item_pipelines=settings.estela_item_pipelines,
                 item_exporters=settings.estela_item_exporters,
                 log_level=settings.estela_log_level,
+                log_flag=settings.estela_log_flag,
+                log_libraries=settings.estela_noisy_libraries,
             )
-            init_logging(estela_hub, settings.estela_log_level)
+            init_logging(estela_hub, settings.estela_log_flag, settings.estela_log_level, settings.estela_noisy_libraries)
             logger.debug("Estela Hub Created from settings: %s", estela_hub)
             return estela_hub
         except Exception as e:
