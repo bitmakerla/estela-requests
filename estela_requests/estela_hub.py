@@ -3,6 +3,7 @@
 import logging
 
 from typing import List
+from typeguard import typechecked
 
 from estela_requests.log_helpers import init_logging
 from estela_queue_adapter.abc_producer import ProducerInterface
@@ -18,7 +19,7 @@ class EstelaHub:
     
     We need to communicate with the queue platform and the API.
     """
-
+    @typechecked
     def __init__(self,
                  producer: ProducerInterface,
                  api_host: str,

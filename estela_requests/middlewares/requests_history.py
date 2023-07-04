@@ -12,7 +12,7 @@ class RequestsHistoryMiddleware(EstelaMiddlewareInterface):
     def __init__(self, 
                  producer: ProducerInterface,
                  topic: str,
-                 metadata: Dict,
+                 metadata: Dict[str, str],
                  )-> None:
         self.producer = producer
         self.topic = topic
