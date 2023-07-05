@@ -17,6 +17,14 @@ class MiddlewareManager:
 
     def prioritize_middlewares(self) -> None:
         pass
+
+    def apply_before_request_middlewares(self, *args, **kwargs) -> None:
+        for middleware in self.middleware_list:
+            middleware.before_request(*args, **kwargs)
+    
+    def apply_after_request_middlewares(self, *args, **kwargs) -> None:
+        for middleware in self.middleware_list:
+            middleware.after_request(*args, **kwargs)
         
     def apply_before_session_middlewares(self, *args, **kwargs) -> None:
         for middleware in self.middleware_list:

@@ -44,3 +44,4 @@ build/
 
 # Ignore dynaconf secret files
 .secrets.*
+api_requests.http

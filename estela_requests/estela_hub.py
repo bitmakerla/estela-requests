@@ -2,7 +2,7 @@
     # producer, api_host, job, auth_token, http_client, args
 import logging
 
-from typing import List
+from typing import List, Union
 
 from estela_requests.log_helpers import init_logging
 from estela_queue_adapter.abc_producer import ProducerInterface
@@ -20,7 +20,7 @@ class EstelaHub:
     """
 
     def __init__(self,
-                 producer: ProducerInterface,
+                 producer: Union[ProducerInterface, None],
                  api_host: str,
                  job: str,
                  http_client: HttpRequestInterface,
@@ -32,9 +32,9 @@ class EstelaHub:
                  job_logs_topic: str,
                  auth_token: str,
                  item_pipelines: List[ItemPipelineInterface],
-                 item_exporters: ItemExporterInterface,
+                 item_exporters: List[ItemExporterInterface],
                  log_level: int,
-                 log_flag: logging.Handler,
+                 log_flag: str,
                  log_libraries: List[str],
                  ) -> None:
         self.producer = producer

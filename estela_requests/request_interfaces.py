@@ -6,15 +6,9 @@ class HttpRequestInterface:
     have to interact with estela wrapper"""
     def request(self, *args, **kwargs):
         pass
-    
-    def get(self, *args, **kwargs):
-        pass
+
 
 class RequestsInterface(HttpRequestInterface):
-    prepared_request = None
 
     def request(self, *args, **kwargs):
         return requests.request(*args, **kwargs)
-    
-    def get(self, *args, **kwargs):
-        return requests.get(*args, **kwargs)

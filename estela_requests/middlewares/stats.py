@@ -30,6 +30,7 @@ class StatsMiddleware(EstelaMiddlewareInterface):
             "log_count/WARNING": 0,
             "log_count/ERROR": 0,
 
+            "downloader/request_count": 0,
             "downloader/response_count": 0,
             "downloader/response_bytes": 0,
 
@@ -52,6 +53,7 @@ class StatsMiddleware(EstelaMiddlewareInterface):
     def after_session(self, *args, **kwargs):
         self.stats["finish_time"] = self.stats.get("finish_time", parse_time())
         self.stats["elapsed_time_seconds"] =  elapsed_seconds_time(self.stats["finish_time"], self.stats["start_time"])
+        self.stats["finish_reason"] = "Finished"
         for k, v in self.default_data.items():
             if k not in self.stats:
                 self.stats[k] = v

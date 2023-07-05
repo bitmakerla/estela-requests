@@ -22,5 +22,5 @@ class ItemPipelineManager:
     def process_item(self, item):
         parsed_item = item
         for item_pipeline in self.item_pipeline_list:
-            parsed_item = item_pipeline.process_item()
+            parsed_item = item_pipeline.process_item(item)
         return parsed_item

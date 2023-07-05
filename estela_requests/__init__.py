@@ -15,14 +15,12 @@ logger = logging.getLogger(__name__)
 
 def apply_request_middlewares(func: Callable):
     def wrapper(wrapper_obj, *args, **kwargs) -> EstelaResponse:
-        for mw in wrapper_obj.middleware_manager.middleware_list:
-            mw.before_request(*args, **kwargs)
+        wrapper_obj.middleware_manager.apply_before_request_middlewares(*args, **kwargs)
 
         response = func(wrapper_obj, *args, **kwargs)
         estela_response = get_estela_response(response)
 
-        for mw in wrapper_obj.middleware_manager.middleware_list:
-            mw.after_request(estela_response, *args, **kwargs)
+        wrapper_obj.middleware_manager.apply_after_request_middlewares(estela_response, *args, **kwargs)
 
         return response 
 
@@ -36,14 +34,12 @@ class EstelaRequests:
                  item_pipeline_manager: ItemPipelineManager,
                  item_exporter_manager: ItemExporterManager,
                  http_client: HttpRequestInterface,
-                 estela_hub: EstelaHub, # to free resources
             ):
         self.middleware_manager = middleware_manager
         self.item_pipeline_manager = item_pipeline_manager
         self.item_exporter_manager = item_exporter_manager
         self.http_client = http_client
         self.middleware_manager.apply_before_session_middlewares()
-        self.estela_hub = estela_hub
 
 
     @classmethod
@@ -52,7 +48,7 @@ class EstelaRequests:
         try:
             instance = cls(
                 MiddlewareManager.from_estela_hub(estela_hub), ItemPipelineManager.from_estela_hub(estela_hub),
-                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client, estela_hub,
+                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client,
             )
             yield instance
         except Exception:
@@ -61,7 +57,7 @@ class EstelaRequests:
             logger.debug("Cleaning up EstelaRequests...")
             logger.debug("Closing connection to the Estela platform")
             instance.cleanup_estela_requests()
-            instance.estela_hub.cleanup_resources()
+            estela_hub.cleanup_resources()
 
     def get(self, *args, **kwargs):
         return self.request("GET", *args, **kwargs)
@@ -75,6 +71,12 @@ class EstelaRequests:
     def put(self, *args, **kwargs):
         return self.request("PUT", *args, **kwargs)
     
+    def head(self, *args, **kwargs):
+        return self.request("HEAD", *args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        return self.request("DELETE", *args, **kwargs)
+    
     @apply_request_middlewares
     def request(self, *args, **kwargs):
         return self.http_client.request(*args, **kwargs)
@@ -84,44 +86,9 @@ class EstelaRequests:
         logger.debug("Exporting item: \n%s", item)
         self.item_exporter_manager.export_item(item)
 
-    def call_after_session_middlewares(self):
-        self.middleware_manager.apply_after_session_middlewares()
-
     def free_resources(self):
         pass
 
     def cleanup_estela_requests(self):
         self.middleware_manager.apply_after_session_middlewares()
         self.free_resources()
-
-
-# EstelaSDK tendria
-# producer, api_host, job, auth_token, http_client, args
-
-# Settings.py se veria como
-# middlewares = RequestsHistry, Stats, Status
-# producer = self.get_producer()
-# job = os.getenv(JOB, "")
-# api_host = os.get()
-# auth_token = os.get(auth_toekn)
-# http_client = self.get_clinet()# args = self.getenv(args, "")
-# middlewares = [
-#   "path_al_middleware",
-#   "path_al_middleware_2",
-# ]
-# 
-# Responsabilities
-# estela_medium
-# estela_sdk tendria todos los attr relevantes para poder comunicarse con estela, se construye desde los settings
-# Pruebas para estela_sdk: ver que tenga todos los atributos y se pueda construir de diferentes maneras.
-# middleware_manager necesita el estela_sdk y middleware_list o se puede construir desde los settings tambien.
-# Pruebsa para middleware manager, que ejecute los middlewares en el orden correspodiente
-# Que se construya de las maneras adecuadas
-# EstelaWrapper sera usada por el usuario y deberia ser manejada de la misma manera que requests,
-# es decir no deberia necesitar ni un solo argumento.
-# EstelaWrapper necesita un estela_medium y middlewares que seran corridos, ambos se pueden obtener el entorno,
-# settings.py
-# EstelaWrapper se encarga de ejecutar el workflow.
-# Este workflow consiste en ejecutar los middlewares a su debido tiempo.
-# Pruebas para EstelaWrapper seria ver que los middlewares son ejecutados y modifican lo que se obtenga
-# como respuesta.
