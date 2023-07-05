@@ -28,5 +28,6 @@ setup(
         "requests>=2.0.0",
         "estela-queue-adapter @ git+https://github.com/bitmakerla/estela-queue-adapter.git",
         "dynaconf",
+        "typeguard",
     ],
 )
