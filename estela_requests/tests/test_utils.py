@@ -2,7 +2,6 @@ import datetime
 import os
 import re
 import pytest
-import typeguard
 from unittest.mock import MagicMock
 from requests import Response
 
@@ -63,11 +62,3 @@ class TestEstelaRequestsUtils:
         assert estela_response.text == 'example content'
         assert estela_response.status_code == 200
         assert estela_response.request.method == 'GET'
-    
-    def test_invalid_response(self):
-        req_obj = MagicMock(spec=EstelaHttpRequest)
-        req_obj.method = "GET"
-        response = "invalid response type"
-        with pytest.raises(typeguard.TypeCheckError):
-            estela_response = get_estela_response(response)
-    

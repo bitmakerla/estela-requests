@@ -48,7 +48,7 @@ class EstelaRequests:
         try:
             instance = cls(
                 MiddlewareManager.from_estela_hub(estela_hub), ItemPipelineManager.from_estela_hub(estela_hub),
-                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client, estela_hub,
+                ItemExporterManager.from_estela_hub(estela_hub), estela_hub.http_client,
             )
             yield instance
         except Exception:

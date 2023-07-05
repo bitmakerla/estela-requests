@@ -3,14 +3,8 @@ import json
 import requests
 import os
 
-from typeguard import typechecked
-from typing import Union
 from datetime import datetime
-from estela_queue_adapter import get_producer_interface
-from estela_queue_adapter.abc_producer import ProducerInterface
 from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
-from estela_requests.request_interfaces import HttpRequestInterface, RequestsInterface
-from estela_requests.exceptions import UnexpectedResponseType
 from requests import Response
 
 default_requests = requests
@@ -34,7 +28,6 @@ def decode_job():
     if job_data.startswith("{"):
         return json.loads(job_data)
 
-@typechecked
 def get_estela_response(response: Response) -> EstelaResponse:
     # It should be extended to support another resposne types
     return EstelaResponse(
