@@ -72,8 +72,8 @@ with EstelaRequests.from_estela_hub(EstelaHub.create_from_settings()) as request
         if next:
             parse_quotes(urljoin(url, next))
     
-if __name__ == "__main__":
-    parse_quotes("http://quotes.toscrape.com/")
+    if __name__ == "__main__":
+        parse_quotes("http://quotes.toscrape.com/")
 ```
 
 First we need to import the `EstelaRequests` and `EstelaHub` classes:
