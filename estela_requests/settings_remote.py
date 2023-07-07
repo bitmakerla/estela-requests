@@ -1,6 +1,6 @@
 import logging
 
-from estela_requests.request_interfaces import RequestsInterface
+from estela_requests.request_interfaces import RequestsInterface, ScrapeGhostInterface
 from estela_queue_adapter.get_interface import get_producer_interface
 from estela_requests.middlewares.requests_history import RequestsHistoryMiddleware
 from estela_requests.middlewares.spider_status import SpiderStatusMiddleware
@@ -10,7 +10,7 @@ from estela_requests.item_pipeline.exporter import KafkaItemExporter, StdoutItem
 
 ESTELA_PRODUCER = get_producer_interface()
 ESTELA_PRODUCER.get_connection()
-HTTP_CLIENT = RequestsInterface()
+HTTP_CLIENT = ScrapeGhostInterface()
 ESTELA_API_HOST = ""
 ESTELA_SPIDER_JOB = ""
 ESTELA_SPIDER_ARGS = ""
