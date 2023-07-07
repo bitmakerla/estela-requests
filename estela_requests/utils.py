@@ -3,7 +3,7 @@ import json
 import requests
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Union
 from scrapeghost.responses import ScrapeResponse
 from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
@@ -54,6 +54,6 @@ def get_estela_response(response: Union[Response, ScrapeResponse]) -> EstelaResp
             EstelaHttpRequest(mock_req),
             len(json.dumps(response.data)),
             hashlib.sha1(json.dumps(response.data).encode("UTF-8")).hexdigest(),
-            response.api_time,
+            timedelta(response.api_time),
         )
 
