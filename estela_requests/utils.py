@@ -4,6 +4,8 @@ import requests
 import os
 
 from datetime import datetime
+from typing import Union
+from scrapeghost.responses import ScrapeResponse
 from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
 from requests import Response
 
@@ -28,15 +30,30 @@ def decode_job():
     if job_data.startswith("{"):
         return json.loads(job_data)
 
-def get_estela_response(response: Response) -> EstelaResponse:
+def get_estela_response(response: Union[Response, ScrapeResponse]) -> EstelaResponse:
     # It should be extended to support another resposne types
-    return EstelaResponse(
-        response.url,
-        response.content,
-        response.text,
-        response.status_code,
-        EstelaHttpRequest(response.request),
-        len(response.text),
-        hashlib.sha1(response.text.encode("UTF-8")).hexdigest(),
-        response.elapsed,
-    )
+    if isinstance(response, Response):
+        return EstelaResponse(
+            response.url,
+            response.content,
+            response.text,
+            response.status_code,
+            EstelaHttpRequest(response.request),
+            len(response.text),
+            hashlib.sha1(response.text.encode("UTF-8")).hexdigest(),
+            response.elapsed,
+        )
+    elif isinstance(response, ScrapeResponse):
+        import json
+        mock_req = requests.Request("GET")
+        return EstelaResponse(
+            response.url,
+            json.dumps(response.data).encode("UTF-8"),
+            json.dumps(response.data),
+            200,
+            EstelaHttpRequest(mock_req),
+            len(json.dumps(response.data)),
+            hashlib.sha1(json.dumps(response.data).encode("UTF-8")).hexdigest(),
+            response.api_time,
+        )
+

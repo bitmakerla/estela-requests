@@ -11,8 +11,8 @@ from estela_requests.item_pipeline.exporter import KafkaItemExporter, StdoutItem
 ESTELA_PRODUCER = get_producer_interface()
 ESTELA_PRODUCER.get_connection()
 HTTP_CLIENT = RequestsInterface()
-ESTELA_API_HOST = "http://127.0.0.1"
-ESTELA_SPIDER_JOB = "101.madbymike.4796d37b-698b-4684-83c8-e3763c8d32ba"
+ESTELA_API_HOST = ""
+ESTELA_SPIDER_JOB = ""
 ESTELA_SPIDER_ARGS = ""
 ESTELA_ITEM_PIPELINES = []
 ESTELA_ITEM_EXPORTERS = [KafkaItemExporter]
