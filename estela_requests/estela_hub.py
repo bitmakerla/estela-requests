@@ -2,40 +2,39 @@
     # producer, api_host, job, auth_token, http_client, args
 import logging
 
-from typing import List, Union
-
-from estela_requests.log_helpers import init_logging
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests.request_interfaces import HttpRequestInterface
-from estela_requests.middlewares.interface import EstelaMiddlewareInterface
+
 from estela_requests.item_pipeline import ItemPipelineInterface
 from estela_requests.item_pipeline.exporter import ItemExporterInterface
+from estela_requests.log_helpers import init_logging
+from estela_requests.middlewares.interface import EstelaMiddlewareInterface
+from estela_requests.request_interfaces import HttpRequestInterface
 
 logger = logging.getLogger(__name__)
 
 class EstelaHub:
     """Class that should contain all the necessary information to communicate with Estela.
-    
+
     We need to communicate with the queue platform and the API.
     """
 
     def __init__(self,
-                 producer: Union[ProducerInterface, None],
+                 producer: ProducerInterface,
                  api_host: str,
                  job: str,
                  http_client: HttpRequestInterface,
                  args: str,
-                 middlewares: List[EstelaMiddlewareInterface],
+                 middlewares: list[EstelaMiddlewareInterface],
                  job_stats_topic: str,
                  job_requests_topic: str,
                  job_items_topic: str,
                  job_logs_topic: str,
                  auth_token: str,
-                 item_pipelines: List[ItemPipelineInterface],
-                 item_exporters: List[ItemExporterInterface],
+                 item_pipelines: list[ItemPipelineInterface],
+                 item_exporters: list[ItemExporterInterface],
                  log_level: int,
                  log_flag: str,
-                 log_libraries: List[str],
+                 log_libraries: list[str],
                  ) -> None:
         self.producer = producer
         self.api_host = api_host
@@ -54,8 +53,8 @@ class EstelaHub:
         self.log_level = logging._levelToName.get(log_level, "UNKNOWN")
         self.log_flag = log_flag
         self.log_libraries = log_libraries
-    
-    def __repr__(self):
+
+    def __repr__(self) -> str:
         attribute_str = '\n '.join([f"'{attr.upper()}': '{getattr(self, attr)}'," for attr in vars(self)])
         return f"EstelaHub(\n{{{attribute_str}\n}})"
 
@@ -67,7 +66,7 @@ class EstelaHub:
 
     @classmethod
     def create_from_settings(cls):
-        try: 
+        try:
             from estela_requests.config import settings
             estela_hub = cls(
                 producer=settings.estela_producer,

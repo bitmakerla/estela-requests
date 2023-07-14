@@ -1,0 +1,18 @@
+
+[tool.ruff]
+select = [
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "UP",  # pyupgrade
+  "I",   # isort
+  "N",   # naming
+  "W",   # warning
+  "C90", # llegando al party en la c90
+  "S",   # bandit
+]
+ignore = [
+  "E501", # Line too long
+]
+
+[tool.ruff.per-file-ignores]
+"test*" = ["S"]

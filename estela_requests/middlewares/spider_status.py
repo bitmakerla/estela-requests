@@ -1,11 +1,11 @@
-import requests
 import logging
 from datetime import timedelta
-from typing import Dict
 
+import requests
 
-from estela_requests.middlewares.interface import EstelaMiddlewareInterface
 from estela_requests.estela_hub import EstelaHub
+from estela_requests.exceptions import InvalidJobFormatError, JobUpdateTimeoutError
+from estela_requests.middlewares.interface import EstelaMiddlewareInterface
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ COMPLETED_STATUS = "COMPLETED"
 
 class SpiderStatusMiddleware(EstelaMiddlewareInterface):
 
-    def __init__(self, job, api_host, auth_token, stats: Dict = {}):
+    def __init__(self, job, api_host, auth_token, stats: dict = {}) -> None:
         self.api_host = api_host
         self.auth_token = auth_token
         job_jid, spider_sid, project_pid = job.split(".")
@@ -35,21 +35,28 @@ class SpiderStatusMiddleware(EstelaMiddlewareInterface):
         item_count=0,
         request_count=0,
     ):
-        assert status in [RUNNING_STATUS, COMPLETED_STATUS], "Invalid job status"
-        assert isinstance(lifespan, timedelta), "Invalid lifespan"
-        res = requests.patch(
-            self.job_url,
-            data={
-                "status": status,
-                "lifespan": lifespan,
-                "total_response_bytes": total_bytes,
-                "item_count": item_count,
-                "request_count": request_count,
-            },
-            headers={"Authorization": "Token {}".format(self.auth_token)},
-        )
-        if res.status_code != 200:
-            logger.error("Failed to update job status, non-200 response")
+        if status not in [RUNNING_STATUS, COMPLETED_STATUS]:
+            raise InvalidJobFormatError("Invalid job status")
+        if not isinstance(lifespan, timedelta):
+            raise InvalidJobFormatError("Invalid lifespan")
+        try:
+            res = requests.patch(
+                self.job_url,
+                data={
+                    "status": status,
+                    "lifespan": lifespan,
+                    "total_response_bytes": total_bytes,
+                    "item_count": item_count,
+                    "request_count": request_count,
+                },
+                headers={"Authorization": f"Token {self.auth_token}"},
+                timeout=20,
+            )
+            if res.status_code != 200:
+                logger.error("Failed to update job status, non-200 response")
+        except requests.exceptions.Timeout:
+            raise JobUpdateTimeoutError("Update job status takes too long.")
+
 
     def before_session(self, *args, **kwargs):
         self.update_job(RUNNING_STATUS)
@@ -62,7 +69,7 @@ class SpiderStatusMiddleware(EstelaMiddlewareInterface):
             total_bytes=self.stats.get("downloader/response_bytes", 0),
             request_count=self.stats.get("downloader/request_count", 0),
         )
-    
+
     def before_request(self, *args, **kwargs):
         pass
 

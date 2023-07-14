@@ -1,7 +1,6 @@
 """Basic Item Pipeline."""
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-from typing import Dict
 
 class ItemPipelineInterface:
 

@@ -1,6 +1,7 @@
-import os
-from dynaconf import Dynaconf
 import logging
+import os
+
+from dynaconf import Dynaconf
 
 logger = logging.getLogger(__name__)
 

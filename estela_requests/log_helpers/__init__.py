@@ -1,8 +1,12 @@
 """Handle EstelaRequests logs."""
-import sys
 import logging
-from estela_requests.log_helpers.handlers import KafkaLogHandler  # TODO: make it more general, any handler
+
 from estela_queue_adapter import queue_noisy_libraries
+
+from estela_requests.log_helpers.handlers import (
+    KafkaLogHandler,  # TODO: make it more general, any handler
+)
+
 
 def init_logging(estela_hub, hdlr_flag, level=logging.DEBUG, noisy_log_libraries=[]):
     root_logger = logging.getLogger('')

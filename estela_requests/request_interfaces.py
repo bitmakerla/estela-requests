@@ -1,6 +1,7 @@
 """Request interfaces."""
 import requests
 
+
 class HttpRequestInterface:
     """It defines the expected interface that a request interface sholhd
     have to interact with estela wrapper"""
