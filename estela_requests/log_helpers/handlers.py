@@ -1,7 +1,6 @@
 import logging
-import time
 import sys
-from typing import Dict
+import time
 
 from estela_queue_adapter.abc_producer import ProducerInterface
 
@@ -11,10 +10,10 @@ _stderr = sys.stderr
 class KafkaLogHandler(logging.Handler):
     """Python kafka logging handler."""
 
-    def __init__(self, 
+    def __init__(self,
                 level,
                 producer: ProducerInterface,
-                metadata: Dict[str, str],
+                metadata: dict[str, str],
                 topic: str,
         ) -> None:
         self.producer = producer
@@ -41,13 +40,13 @@ class KafkaLogHandler(logging.Handler):
                 self._logfn(message=message)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             self.handleError(record)
 
-    def handleError(self, record):
+    def handleError(self, record):  # noqa N802
         cur = sys.stderr
         try:
             sys.stderr = _stderr
         finally:
-            super(KafkaLogHandler, self).handleError(record)
+            super().handleError(record)
             sys.stderr = cur

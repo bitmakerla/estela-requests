@@ -1,14 +1,17 @@
 import datetime
 import os
 import re
-import pytest
 from unittest.mock import MagicMock
+
 from requests import Response
 
-from estela_requests.utils import (decode_job, elapsed_seconds_time,
-                                   get_estela_response, parse_time)
 from estela_requests.estela_http import EstelaHttpRequest
-
+from estela_requests.utils import (
+    decode_job,
+    elapsed_seconds_time,
+    get_estela_response,
+    parse_time,
+)
 
 
 class TestEstelaRequestsUtils:
@@ -27,12 +30,12 @@ class TestEstelaRequestsUtils:
     def test_empty_datetime_object(self):
         time_pattern = r"\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}\.\d{3}"
         assert re.match(time_pattern, parse_time())
-    
+
     # Tests that a valid JSON string is returned when JOB_INFO environment variable starts with '{'.
     def test_valid_json_in_decode_job(self):
         os.environ['JOB_INFO'] = '{"key": "value", "key2": "value2"}'
         assert decode_job() == {'key': 'value', 'key2': "value2"}
-    
+
     def test_valid_job_info(self):
         os.environ["JOB_INFO"] = '''{
             "key":"jid.sid.pid",

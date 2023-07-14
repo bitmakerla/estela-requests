@@ -6,7 +6,7 @@ class EstelaHttpRequest:
     @property
     def method(self):
         return self.request_obj.method
-        
+
 
 class EstelaResponse:
     def __init__(self,

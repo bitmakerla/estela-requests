@@ -2,7 +2,6 @@
 import random
 from unittest.mock import Mock
 
-import pytest
 from estela_queue_adapter.abc_producer import ProducerInterface
 
 from estela_requests.estela_http import EstelaResponse
@@ -32,7 +31,7 @@ Fields:
 class TestStatsMiddleware:
     # Tests that after_request method updates stats correctly
     def test_stats_updates_correctly(self):
-        
+
         producer = Mock(spec=ProducerInterface)
         topic = 'test_topic'
         metadata = {'jid': 'test_job'}
@@ -43,9 +42,9 @@ class TestStatsMiddleware:
             middleware.before_request("GET")
         success_response = EstelaResponse('http://test.com', b'test', 'test', 200, None, 4, 'test', 2.0)
         failed_response =  EstelaResponse('http://test.com', b'test', 'test', 401, None, 4, 'test', 2.0)
-        middleware.after_request(success_response) 
-        middleware.after_request(failed_response) 
-        middleware.after_request(failed_response) 
+        middleware.after_request(success_response)
+        middleware.after_request(failed_response)
+        middleware.after_request(failed_response)
         assert middleware.stats['downloader/response_status_count/200'] == 1
         assert middleware.stats['downloader/response_status_count/401'] == 2
         assert middleware.stats['downloader/response_count'] == 3
@@ -82,7 +81,7 @@ class TestStatsMiddleware:
         producer = Mock(spec=ProducerInterface)
         topic = 'test_topic'
         metadata = {'key': 'value'}
-        stats = {}        
+        stats = {}
         middleware = StatsMiddleware(producer, topic, metadata, stats)
         middleware.before_session()
         assert middleware.stats["start_time"]
@@ -95,7 +94,7 @@ class TestStatsMiddleware:
         producer = Mock(spec=ProducerInterface)
         topic = 'test_topic'
         metadata = {'key': 'value'}
-        stats = {}        
+        stats = {}
         middleware = StatsMiddleware(producer, topic, metadata, stats)
         middleware.before_request("GET")
         middleware.before_request("GET")
@@ -110,7 +109,7 @@ class TestStatsMiddleware:
         producer = Mock(spec=ProducerInterface)
         topic = 'test_topic'
         metadata = {'key': 'value'}
-        stats = {}        
+        stats = {}
         middleware = StatsMiddleware(producer, topic, metadata, stats)
         success_response = EstelaResponse('http://test.com', b'test', 'test', 200, None, 4, 'test', 2.0)
         failed_response =  EstelaResponse('http://test.com', b'test', 'test', 401, None, 4, 'test', 2.0)

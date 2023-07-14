@@ -1,12 +1,12 @@
 import logging
 
-from estela_requests.request_interfaces import RequestsInterface
 from estela_queue_adapter.get_interface import get_producer_interface
+
+from estela_requests.item_pipeline.exporter import KafkaItemExporter
 from estela_requests.middlewares.requests_history import RequestsHistoryMiddleware
 from estela_requests.middlewares.spider_status import SpiderStatusMiddleware
 from estela_requests.middlewares.stats import StatsMiddleware
-from estela_requests.log_helpers.handlers import KafkaLogHandler
-from estela_requests.item_pipeline.exporter import KafkaItemExporter, StdoutItemExporter
+from estela_requests.request_interfaces import RequestsInterface
 
 ESTELA_PRODUCER = get_producer_interface()
 ESTELA_PRODUCER.get_connection()

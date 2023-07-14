@@ -1,6 +1,12 @@
 from unittest.mock import MagicMock
+
 from estela_queue_adapter.abc_producer import ProducerInterface
-from estela_requests.item_pipeline.exporter import KafkaItemExporter, StdoutItemExporter, ItemExporterManager
+
+from estela_requests.item_pipeline.exporter import (
+    ItemExporterManager,
+    KafkaItemExporter,
+    StdoutItemExporter,
+)
 
 
 class TestItemPipeline:
@@ -22,7 +28,7 @@ class TestItemPipeline:
         exporter.export_item(item)
         captured = capsys.readouterr()
         assert captured.out == expected_output
-    
+
     def test_item_exporter_manager(self, capsys):
         item = {'name': 'John', 'age': 30}
         expected_output = f"Item: {item}\n"

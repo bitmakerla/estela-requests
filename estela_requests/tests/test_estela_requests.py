@@ -1,20 +1,24 @@
-import requests
-from requests import Response
 from datetime import timedelta
+from unittest.mock import ANY, MagicMock, Mock, patch
 
-from unittest.mock import MagicMock, Mock, patch, ANY
-from estela_requests import EstelaRequests
-from estela_requests.middlewares.manager import MiddlewareManager
-from estela_requests.middlewares.spider_status import SpiderStatusMiddleware
-from estela_requests.middlewares.requests_history import RequestsHistoryMiddleware
-from estela_requests.middlewares.stats import StatsMiddleware
-from estela_requests.item_pipeline.manager import ItemPipelineManager
-from estela_requests.item_pipeline.default import MyItemPipeline
-from estela_requests.item_pipeline.exporter import StdoutItemExporter, KafkaItemExporter, ItemExporterManager
+import requests
 from estela_queue_adapter.abc_producer import ProducerInterface
+from requests import Response
+
+from estela_requests import EstelaRequests
+from estela_requests.estela_http import EstelaHttpRequest
+from estela_requests.item_pipeline.default import MyItemPipeline
+from estela_requests.item_pipeline.exporter import (
+    ItemExporterManager,
+    KafkaItemExporter,
+    StdoutItemExporter,
+)
+from estela_requests.item_pipeline.manager import ItemPipelineManager
+from estela_requests.middlewares.manager import MiddlewareManager
+from estela_requests.middlewares.requests_history import RequestsHistoryMiddleware
+from estela_requests.middlewares.spider_status import SpiderStatusMiddleware
+from estela_requests.middlewares.stats import StatsMiddleware
 from estela_requests.request_interfaces import RequestsInterface
-from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
-from estela_requests.utils import get_estela_response, parse_time
 
 
 class TestEstelaRequests:
@@ -24,7 +28,7 @@ class TestEstelaRequests:
         """Simulating using response to get a item."""
         # parse response
         return {"foo": "bar"}
-    
+
     def test_estela_requests_run(self, capsys):
         producer_mock = Mock(spec=ProducerInterface)
         requests_topic = "foo_requests"
@@ -58,7 +62,7 @@ class TestEstelaRequests:
         response.elapsed = timedelta(seconds=2)
         req_itf = Mock(spec=RequestsInterface)
         req_itf.request.return_value = response
-        with patch("requests.patch") as mock_patch:
+        with patch("requests.patch"):
             estela_request = EstelaRequests(mw_manager, pp_manager, ex_manager, req_itf)
             fin_response = estela_request.get("http://example.com") # It should call all the middlewares.
             item = self.get_mock_item(fin_response)
@@ -69,11 +73,12 @@ class TestEstelaRequests:
             assert producer_mock.send.call_count == 3 # Called three times(StatsMw, RequestsMw, ItemExporter)
             requests.patch.assert_called_with(
                 'http://mock_host.example/api/projects/3/spiders/2/jobs/1',
-                data=ANY, headers={'Authorization': 'Token mock_token'})
+                data=ANY, headers={'Authorization': 'Token mock_token'}, timeout=20)
             requests.patch.assert_called_with(
                 'http://mock_host.example/api/projects/3/spiders/2/jobs/1',
                 data={'status': 'COMPLETED', 'lifespan': ANY, 'total_response_bytes': 15, 'item_count': 1, 'request_count': 1},
-                headers={'Authorization': 'Token mock_token'}
+                headers={'Authorization': 'Token mock_token'},
+                timeout=20,
             )
             producer_mock.send.assert_any_call(requests_topic, {
                 'jid': '1.2.3',
@@ -114,10 +119,6 @@ class TestEstelaRequests:
                     "elapsed_time_seconds": ANY,
                 }
             })
-            # producer_mock.send.assert_any_call(item_topic, {
-            #     'jid': '1.2.3',
-            #     ,
-            # })
             captured = capsys.readouterr().out
             assert captured == expected_output
 

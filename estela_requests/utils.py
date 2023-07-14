@@ -1,11 +1,12 @@
 import hashlib
 import json
-import requests
 import os
-
 from datetime import datetime
-from estela_requests.estela_http import EstelaResponse, EstelaHttpRequest
+
+import requests
 from requests import Response
+
+from estela_requests.estela_http import EstelaHttpRequest, EstelaResponse
 
 default_requests = requests
 
@@ -37,6 +38,6 @@ def get_estela_response(response: Response) -> EstelaResponse:
         response.status_code,
         EstelaHttpRequest(response.request),
         len(response.text),
-        hashlib.sha1(response.text.encode("UTF-8")).hexdigest(),
+        hashlib.sha1(response.text.encode("UTF-8")).hexdigest(),  # noqa S324
         response.elapsed,
     )
