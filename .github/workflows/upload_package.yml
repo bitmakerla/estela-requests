@@ -1,9 +1,9 @@
 name: Publish to PyPI
 
 on:
-  push:
-    branches:
-      - add-pypi-upload
+  release:
+    types:
+      - created
 
 jobs:
   deploy:
