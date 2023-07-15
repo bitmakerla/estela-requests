@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as fh:
 
 setup(
     name='estela_requests',
-    version='0.0.1-a1',
+    version="0.0.1",
     description='estela_requests is a request wrapper for estela.',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,7 +26,7 @@ setup(
     install_requires=[
         "estela>=0.0.2",
         "requests>=2.0.0",
-        "estela-queue-adapter @ git+https://github.com/bitmakerla/estela-queue-adapter.git",
+        "estela-queue-adapter",
         "dynaconf",
     ],
 )
