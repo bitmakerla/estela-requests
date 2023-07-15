@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as fh:
 
 setup(
     name='estela_requests',
-    version="0.0.1",
+    version="1.0.0",
     description='estela_requests is a request wrapper for estela.',
     long_description=long_description,
     long_description_content_type="text/markdown",
