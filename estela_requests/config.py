@@ -18,6 +18,6 @@ settings = Dynaconf(
     settings_files= settings_files_list,
 )
 
-print("Settings file list: %s" % settings_files_list)
+print(f"Settings file list: {settings_files_list}")
 sett_as_dict = settings.as_dict()
-print("Settings obtained: %s" % sett_as_dict)
+print(f"Settings obtained: {sett_as_dict}")

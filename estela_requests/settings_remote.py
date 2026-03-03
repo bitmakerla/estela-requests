@@ -1,4 +1,5 @@
 import logging
+import os
 
 from estela_queue_adapter.get_interface import get_producer_interface
 
@@ -13,7 +14,7 @@ ESTELA_PRODUCER.get_connection()
 HTTP_CLIENT = RequestsInterface()
 ESTELA_API_HOST = "http://127.0.0.1"
 ESTELA_SPIDER_JOB = "101.madbymike.4796d37b-698b-4684-83c8-e3763c8d32ba"
-ESTELA_SPIDER_ARGS = ""
+ESTELA_SPIDER_ARGS = os.environ.get("ESTELA_SPIDER_ARGS", "")
 ESTELA_ITEM_PIPELINES = []
 ESTELA_ITEM_EXPORTERS = [KafkaItemExporter]
 ESTELA_LOG_LEVEL = logging.DEBUG

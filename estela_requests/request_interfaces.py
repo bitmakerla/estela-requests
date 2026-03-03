@@ -12,4 +12,4 @@ class HttpRequestInterface:
 class RequestsInterface(HttpRequestInterface):
 
     def request(self, *args, **kwargs):
-        return requests.request(*args, **kwargs)
+        return requests.request(*args, **kwargs)  # noqa: S113

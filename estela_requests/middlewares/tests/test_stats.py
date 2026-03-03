@@ -67,7 +67,7 @@ class TestStatsMiddleware:
         assert middleware.stats['downloader/request_count'] == 0
         assert middleware.stats['response_received_count'] == 0
 
-    def test_after_session_updates_stats_correctly(self):
+    def test_before_session_sets_start_time(self):
         producer = Mock(spec=ProducerInterface)
         topic = 'test_topic'
         metadata = {'jid': 'test_job'}
